@@ -18,7 +18,9 @@ CREATE TABLE materiales (
     autor VARCHAR(100) NOT NULL,
     anio_publicacion INT NOT NULL,
     tipo_material ENUM('LIBRO', 'REVISTA') NOT NULL,
-    estado ENUM('DISPONIBLE', 'PRESTADO') NOT NULL DEFAULT 'DISPONIBLE'
+    estado ENUM('DISPONIBLE', 'PRESTADO') NOT NULL DEFAULT 'DISPONIBLE',
+    isbn VARCHAR(20) NULL,
+    numero_edicion INT NULL
 );
 
 CREATE TABLE prestamos (
@@ -46,10 +48,29 @@ VALUES
 ('2-2222-2222', 'Carlos Gómez', 'carlos@universidad.com', 'PROFESOR', TRUE);
 
 INSERT INTO materiales
-(codigo, titulo, autor, anio_publicacion, tipo_material, estado)
+(codigo, titulo, autor, anio_publicacion, tipo_material,
+ estado, isbn, numero_edicion)
 VALUES
-('LIB001', 'Introducción a Java', 'Luis Fernández', 2024, 'LIBRO', 'PRESTADO'),
-('REV001', 'Tecnología Universitaria', 'Editorial Académica', 2025, 'REVISTA', 'DISPONIBLE');
+(
+    'LIB001',
+    'Introducción a Java',
+    'Luis Fernández',
+    2024,
+    'LIBRO',
+    'PRESTADO',
+    '978-1234567890',
+    NULL
+),
+(
+    'REV001',
+    'Tecnología Universitaria',
+    'Editorial Académica',
+    2025,
+    'REVISTA',
+    'DISPONIBLE',
+    NULL,
+    10
+);
 
 INSERT INTO prestamos
 (id_usuario, id_material, fecha_prestamo, fecha_devolucion_prevista)
