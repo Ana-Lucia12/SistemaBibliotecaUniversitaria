@@ -81,29 +81,36 @@ public class PanelUsuarios extends javax.swing.JPanel {
 
         jtxtNombre.setBackground(new java.awt.Color(41, 58, 38));
         jtxtNombre.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtNombre.setForeground(new java.awt.Color(255, 255, 255));
 
         jtxtID.setBackground(new java.awt.Color(41, 58, 38));
         jtxtID.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtID.setForeground(new java.awt.Color(255, 255, 255));
 
         jtxtCorreo.setBackground(new java.awt.Color(41, 58, 38));
         jtxtCorreo.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtCorreo.setForeground(new java.awt.Color(255, 255, 255));
 
         jcmbTipo.setBackground(new java.awt.Color(41, 58, 38));
         jcmbTipo.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jcmbTipo.setForeground(new java.awt.Color(255, 255, 255));
         jcmbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Null", "Profesor", "Estudiante" }));
 
         jBtnGuardar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnGuardar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnGuardar.setForeground(new java.awt.Color(255, 255, 255));
         jBtnGuardar.setText("Guardar");
         jBtnGuardar.addActionListener(this::jBtnGuardarActionPerformed);
 
         jBtnConsultar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnConsultar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnConsultar.setForeground(new java.awt.Color(255, 255, 255));
         jBtnConsultar.setText("Consultar");
         jBtnConsultar.addActionListener(this::jBtnConsultarActionPerformed);
 
         jBtnLimpiar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnLimpiar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnLimpiar.setForeground(new java.awt.Color(255, 255, 255));
         jBtnLimpiar.setText("Limpiar");
         jBtnLimpiar.addActionListener(this::jBtnLimpiarActionPerformed);
 

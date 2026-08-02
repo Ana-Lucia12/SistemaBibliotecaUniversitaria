@@ -68,5 +68,8 @@ public abstract class MaterialBibliografico implements Prestable{
         this.estado = estado;
     }
     
-    
+    @Override
+    public String toString() {
+        return titulo;
+    }
 }
