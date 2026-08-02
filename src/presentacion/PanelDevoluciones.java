@@ -4,6 +4,16 @@
  */
 package presentacion;
 
+import datos.PrestamoDAO;
+import javax.swing.table.DefaultTableModel;
+import modelo.Prestamo;
+import modelo.EstadoPrestamo;
+import datos.MaterialDAO;
+import modelo.EstadoMaterial;
+import modelo.MaterialBibliografico;
+import java.time.LocalDate;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author yarie
@@ -15,6 +25,29 @@ public class PanelDevoluciones extends javax.swing.JPanel {
      */
     public PanelDevoluciones() {
         initComponents();
+        cargarTabla();
+    }
+    
+    //Método para cargar la tabla
+    private void cargarTabla() {
+
+        DefaultTableModel modelo = (DefaultTableModel) jTableDevoluciones.getModel();
+        modelo.setRowCount(0);
+
+        PrestamoDAO dao = new PrestamoDAO();
+
+        for (Prestamo p : dao.listar()) {
+
+            if (p.getEstado() == EstadoPrestamo.ACTIVO) {
+
+                modelo.addRow(new Object[]{
+                    p.getId(),
+                    p.getUsuario().getNombre(),
+                    p.getMaterial().getTitulo(),
+                    p.getFechaPrestamo()
+                });
+            }
+        }
     }
 
     /**
@@ -41,17 +74,17 @@ public class PanelDevoluciones extends javax.swing.JPanel {
         jTableDevoluciones.setForeground(new java.awt.Color(255, 255, 255));
         jTableDevoluciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Usuario", "Material", "Fecha"
+                "ID", "Usuario", "Material", "Fecha"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -67,7 +100,9 @@ public class PanelDevoluciones extends javax.swing.JPanel {
 
         jBtnRegistrarDevolución.setBackground(new java.awt.Color(41, 58, 38));
         jBtnRegistrarDevolución.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnRegistrarDevolución.setForeground(new java.awt.Color(255, 255, 255));
         jBtnRegistrarDevolución.setText("Registrar devolución");
+        jBtnRegistrarDevolución.addActionListener(this::jBtnRegistrarDevoluciónActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -96,6 +131,68 @@ public class PanelDevoluciones extends javax.swing.JPanel {
                 .addContainerGap(36, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jBtnRegistrarDevoluciónActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnRegistrarDevoluciónActionPerformed
+    
+        int fila = jTableDevoluciones.getSelectedRow();
+
+        if (fila == -1) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Seleccione un préstamo."
+            );
+
+            return;
+        }
+
+        int idPrestamo =
+                Integer.parseInt(
+                        jTableDevoluciones.getValueAt(fila, 0).toString()
+                );
+
+        PrestamoDAO prestamoDAO = new PrestamoDAO();
+
+        Prestamo prestamo = prestamoDAO.buscarPorId(idPrestamo);
+
+        if (prestamo == null) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se encontró el préstamo."
+            );
+
+            return;
+        }
+
+        if (prestamoDAO.registrarDevolucion(
+                idPrestamo,
+                LocalDate.now())) {
+
+            MaterialDAO materialDAO = new MaterialDAO();
+
+            MaterialBibliografico material = prestamo.getMaterial();
+
+            materialDAO.actualizarEstado(
+                    material.getId(),
+                    EstadoMaterial.DISPONIBLE
+            );
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Devolución registrada correctamente."
+            );
+
+            cargarTabla();
+
+        } else {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudo registrar la devolución."
+            );
+        }
+    }//GEN-LAST:event_jBtnRegistrarDevoluciónActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

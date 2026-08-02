@@ -17,6 +17,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      */
     public VentanaPrincipal() {
         initComponents();
+        
+        //Agrega los paneles como pestañas
+        jTabbedPanePrincipal.addTab("Usuarios", new PanelUsuarios());
+        jTabbedPanePrincipal.addTab("Materiales", new PanelMateriales());
+        jTabbedPanePrincipal.addTab("Préstamos", new PanelPrestamos());
+        jTabbedPanePrincipal.addTab("Devoluciones", new PanelDevoluciones());
     }
 
     /**
