@@ -4,17 +4,28 @@
  */
 package presentacion;
 
+import datos.UsuarioDAO;
+import modelo.Estudiante;
+import modelo.Profesor;
+import modelo.Usuario;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author yarie
  */
 public class PanelUsuarios extends javax.swing.JPanel {
-
+    
+    private UsuarioDAO usuarioDAO = new UsuarioDAO();
     /**
      * Creates new form PanelUsuarios
      */
     public PanelUsuarios() {
         initComponents();
+        cargarTabla();
+        
     }
 
     /**
@@ -84,14 +95,17 @@ public class PanelUsuarios extends javax.swing.JPanel {
         jBtnGuardar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnGuardar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jBtnGuardar.setText("Guardar");
+        jBtnGuardar.addActionListener(this::jBtnGuardarActionPerformed);
 
         jBtnConsultar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnConsultar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jBtnConsultar.setText("Consultar");
+        jBtnConsultar.addActionListener(this::jBtnConsultarActionPerformed);
 
         jBtnLimpiar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnLimpiar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jBtnLimpiar.setText("Limpiar");
+        jBtnLimpiar.addActionListener(this::jBtnLimpiarActionPerformed);
 
         jScrollPane1.setBackground(new java.awt.Color(41, 58, 38));
 
@@ -186,7 +200,99 @@ public class PanelUsuarios extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jBtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnGuardarActionPerformed
+        
+        String nombre = jtxtNombre.getText().trim();
+        String identificacion = jtxtID.getText().trim();
+        String correo = jtxtCorreo.getText().trim();
+        String tipo = jcmbTipo.getSelectedItem().toString();
 
+        if(nombre.isEmpty() || identificacion.isEmpty() || correo.isEmpty() // Si los campos estan vacios, muestra advertencia
+                || tipo.equals("Null")){
+
+            JOptionPane.showMessageDialog(this, "Complete todos los campos.");
+            return;
+        }
+        
+        Usuario existente = usuarioDAO.buscarPorIdentificacion(identificacion);
+
+            // Validación de ID
+            if(existente != null){
+
+                    JOptionPane.showMessageDialog(this,
+                            "Ya existe un usuario con esa identificación.");
+
+                    return;
+            }    
+            
+        Usuario usuario;
+        
+        //Se registra dependiendo si es estudiante o profesor
+        if(tipo.equals("Estudiante")){
+           
+            usuario = new Estudiante(0, identificacion, nombre, correo, true);
+            
+        }else{
+            
+            usuario = new Profesor(0, identificacion, nombre, correo, true);
+        }
+        
+        //Llama a el DAO
+        if(usuarioDAO.registrar(usuario)){
+
+            JOptionPane.showMessageDialog(this,
+                    "Usuario registrado correctamente.");
+
+            limpiarCampos();
+
+            cargarTabla();
+
+        }else{
+
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo registrar el usuario.");
+        }
+    }//GEN-LAST:event_jBtnGuardarActionPerformed
+
+    private void jBtnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnLimpiarActionPerformed
+        
+        limpiarCampos();
+        
+    }//GEN-LAST:event_jBtnLimpiarActionPerformed
+
+    private void jBtnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnConsultarActionPerformed
+        
+        String identificacion = jtxtID.getText().trim();
+
+        if (identificacion.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Ingrese una identificación.");
+            return;
+        }
+
+        Usuario usuario =
+                usuarioDAO.buscarPorIdentificacion(identificacion);
+
+        if (usuario != null) {
+
+            jtxtNombre.setText(usuario.getNombre());
+            jtxtCorreo.setText(usuario.getCorreo());
+
+            //identifica de qué clase es el objeto(profesor o estudiante).
+            if (usuario instanceof Estudiante) {
+                jcmbTipo.setSelectedItem("Estudiante");
+            } else {
+                jcmbTipo.setSelectedItem("Profesor");
+            }
+
+        } else {
+
+            limpiarCampos();
+            JOptionPane.showMessageDialog(this,
+                    "Usuario no encontrado.");
+        }
+    }//GEN-LAST:event_jBtnConsultarActionPerformed
+ 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBtnConsultar;
     private javax.swing.JButton jBtnGuardar;
@@ -203,4 +309,46 @@ public class PanelUsuarios extends javax.swing.JPanel {
     private javax.swing.JTextField jtxtID;
     private javax.swing.JTextField jtxtNombre;
     // End of variables declaration//GEN-END:variables
+    
+    
+    //Método para limpiar campos
+    private void limpiarCampos(){
+
+        jtxtNombre.setText("");
+        jtxtID.setText("");
+        jtxtCorreo.setText("");
+        jcmbTipo.setSelectedIndex(0);
+    
+    }
+    
+    
+    //Método para cargar la tabla
+    private void cargarTabla(){
+
+        DefaultTableModel modelo =
+                (DefaultTableModel) jTableUsuarios.getModel();
+
+        modelo.setRowCount(0);
+
+        List<Usuario> lista = usuarioDAO.listar();
+
+        for(Usuario usuario : lista){
+
+            String tipo;
+
+            if(usuario instanceof Estudiante){
+                tipo = "Estudiante";
+            }else{
+                tipo = "Profesor";
+            }
+
+            modelo.addRow(new Object[]{
+                usuario.getNombre(),
+                usuario.getIdentificacion(),
+                usuario.getCorreo(),
+                tipo
+            });
+        }
+
+    }
 }
