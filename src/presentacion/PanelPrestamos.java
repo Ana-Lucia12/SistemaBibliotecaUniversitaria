@@ -4,6 +4,18 @@
  */
 package presentacion;
 
+import datos.MaterialDAO;
+import datos.PrestamoDAO;
+import datos.UsuarioDAO;
+import java.time.LocalDate;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelo.EstadoMaterial;
+import modelo.EstadoPrestamo;
+import modelo.MaterialBibliografico;
+import modelo.Prestamo;
+import modelo.Usuario;
+
 /**
  *
  * @author yarie
@@ -15,8 +27,67 @@ public class PanelPrestamos extends javax.swing.JPanel {
      */
     public PanelPrestamos() {
         initComponents();
+        cargarUsuarios();
+        cargarMateriales();
+        cargarTabla();
+
+        jFormattedTextFieldFecha.setText(LocalDate.now().toString());
+    }
+    
+    //Métodos para cargar los combo box 
+    private void cargarUsuarios() {
+
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+
+        jcmbUsuario.removeAllItems();
+
+        for (Usuario usuario : usuarioDAO.listar()) {
+            jcmbUsuario.addItem(usuario.getNombre());
+        }
     }
 
+    private void cargarMateriales() {
+
+        MaterialDAO materialDAO = new MaterialDAO();
+
+        jcmbMaterial.removeAllItems();
+
+        for (MaterialBibliografico material : materialDAO.listar()) {
+
+            if (material.getEstado() == EstadoMaterial.DISPONIBLE) {
+                jcmbMaterial.addItem(material.getTitulo());
+            }
+        }
+    }
+    
+    //Método para cargar la tabla
+    private void cargarTabla() {
+
+        DefaultTableModel modelo = (DefaultTableModel) jTablePrestamos.getModel();
+
+        modelo.setRowCount(0);
+
+        PrestamoDAO dao = new PrestamoDAO();
+
+        for (Prestamo p : dao.listar()) {
+
+            modelo.addRow(new Object[]{
+                p.getUsuario().getNombre(),
+                p.getMaterial().getTitulo(),
+                p.getFechaPrestamo()
+            });
+        }
+    }
+    
+    //Método para limpiar controles
+    private void limpiarCampos() {
+
+        jcmbUsuario.setSelectedIndex(0);
+        jcmbMaterial.setSelectedIndex(0);
+        jFormattedTextFieldFecha.setText("");
+
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,10 +122,12 @@ public class PanelPrestamos extends javax.swing.JPanel {
 
         jcmbUsuario.setBackground(new java.awt.Color(41, 58, 38));
         jcmbUsuario.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jcmbUsuario.setForeground(new java.awt.Color(255, 255, 255));
         jcmbUsuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Null", "Libro ", "Revista" }));
 
         jcmbMaterial.setBackground(new java.awt.Color(41, 58, 38));
         jcmbMaterial.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jcmbMaterial.setForeground(new java.awt.Color(255, 255, 255));
         jcmbMaterial.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Null", "Libro ", "Revista" }));
 
         jlblMaterial.setBackground(new java.awt.Color(41, 58, 38));
@@ -76,7 +149,9 @@ public class PanelPrestamos extends javax.swing.JPanel {
 
         jBtnRegistrarPrestamo.setBackground(new java.awt.Color(41, 58, 38));
         jBtnRegistrarPrestamo.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnRegistrarPrestamo.setForeground(new java.awt.Color(255, 255, 255));
         jBtnRegistrarPrestamo.setText("Registrar Préstamo");
+        jBtnRegistrarPrestamo.addActionListener(this::jBtnRegistrarPrestamoActionPerformed);
 
         jScrollPane1.setBackground(new java.awt.Color(41, 58, 38));
 
@@ -165,6 +240,74 @@ public class PanelPrestamos extends javax.swing.JPanel {
                 .addGap(28, 28, 28))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jBtnRegistrarPrestamoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnRegistrarPrestamoActionPerformed
+        
+        try {
+
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
+            MaterialDAO materialDAO = new MaterialDAO();
+            PrestamoDAO prestamoDAO = new PrestamoDAO();
+
+            Usuario usuario = usuarioDAO.listar().get(jcmbUsuario.getSelectedIndex());
+            MaterialBibliografico material = materialDAO.listar().get(jcmbMaterial.getSelectedIndex());
+
+            if (prestamoDAO.contarPrestamosActivos(usuario.getId())>= usuario.obtenerLimitePrestamos()) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "El usuario alcanzó el límite de préstamos."
+                );
+
+                return;
+            }
+
+            LocalDate fechaPrestamo = LocalDate.now();
+
+            LocalDate fechaPrevista = fechaPrestamo.plusDays(15);
+
+            Prestamo prestamo = new Prestamo(
+                    0,
+                    usuario,
+                    material,
+                    fechaPrestamo,
+                    fechaPrevista,
+                    null,
+                    EstadoPrestamo.ACTIVO
+            );
+
+            if (prestamoDAO.registrar(prestamo)) {
+
+                materialDAO.actualizarEstado(
+                        material.getId(),
+                        EstadoMaterial.PRESTADO
+                );
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Préstamo registrado correctamente."
+                );
+
+                cargarTabla();
+                cargarMateriales();
+                limpiarCampos();
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se pudo registrar el préstamo."
+                );
+            }
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error: " + e.getMessage()
+            );
+        }
+    }//GEN-LAST:event_jBtnRegistrarPrestamoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

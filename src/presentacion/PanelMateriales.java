@@ -4,17 +4,28 @@
  */
 package presentacion;
 
+import datos.MaterialDAO;
+import modelo.MaterialBibliografico;
+import modelo.Libro;
+import modelo.Revista;
+import modelo.EstadoMaterial;
+import modelo.TipoMaterial;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author yarie
  */
 public class PanelMateriales extends javax.swing.JPanel {
 
+    private MaterialDAO materialDAO = new MaterialDAO();
     /**
      * Creates new form PanelMateriales
      */
     public PanelMateriales() {
         initComponents();
+        cargarTabla();
     }
 
     /**
@@ -42,12 +53,18 @@ public class PanelMateriales extends javax.swing.JPanel {
         jcmbTipo = new javax.swing.JComboBox<>();
         jlblTipo = new javax.swing.JLabel();
         jtxtAnio = new javax.swing.JTextField();
+        jlblNumeroEdicion = new javax.swing.JLabel();
+        jtxtNumeroEdicion = new javax.swing.JTextField();
+        jtxtISBN = new javax.swing.JTextField();
+        jlblISBN = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
         jBtnGuardar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnGuardar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnGuardar.setForeground(new java.awt.Color(255, 255, 255));
         jBtnGuardar.setText("Guardar");
+        jBtnGuardar.addActionListener(this::jBtnGuardarActionPerformed);
 
         jlblCódigo.setBackground(new java.awt.Color(41, 58, 38));
         jlblCódigo.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -56,7 +73,9 @@ public class PanelMateriales extends javax.swing.JPanel {
 
         jBtnConsultar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnConsultar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnConsultar.setForeground(new java.awt.Color(255, 255, 255));
         jBtnConsultar.setText("Consultar");
+        jBtnConsultar.addActionListener(this::jBtnConsultarActionPerformed);
 
         jlblTitulo2.setBackground(new java.awt.Color(41, 58, 38));
         jlblTitulo2.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -65,7 +84,9 @@ public class PanelMateriales extends javax.swing.JPanel {
 
         jBtnLimpiar.setBackground(new java.awt.Color(41, 58, 38));
         jBtnLimpiar.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnLimpiar.setForeground(new java.awt.Color(255, 255, 255));
         jBtnLimpiar.setText("Limpiar");
+        jBtnLimpiar.addActionListener(this::jBtnLimpiarActionPerformed);
 
         jlblAutor.setBackground(new java.awt.Color(41, 58, 38));
         jlblAutor.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -111,16 +132,20 @@ public class PanelMateriales extends javax.swing.JPanel {
 
         jtxtCódigo.setBackground(new java.awt.Color(41, 58, 38));
         jtxtCódigo.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtCódigo.setForeground(new java.awt.Color(255, 255, 255));
 
         jtxtTitulo.setBackground(new java.awt.Color(41, 58, 38));
         jtxtTitulo.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtTitulo.setForeground(new java.awt.Color(255, 255, 255));
 
         jtxtAutor.setBackground(new java.awt.Color(41, 58, 38));
         jtxtAutor.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtAutor.setForeground(new java.awt.Color(255, 255, 255));
 
         jcmbTipo.setBackground(new java.awt.Color(41, 58, 38));
         jcmbTipo.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jcmbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Null", "Libro ", "Revista" }));
+        jcmbTipo.setForeground(new java.awt.Color(255, 255, 255));
+        jcmbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Null", "Libro", "Revista" }));
 
         jlblTipo.setBackground(new java.awt.Color(41, 58, 38));
         jlblTipo.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -129,77 +154,279 @@ public class PanelMateriales extends javax.swing.JPanel {
 
         jtxtAnio.setBackground(new java.awt.Color(41, 58, 38));
         jtxtAnio.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtAnio.setForeground(new java.awt.Color(255, 255, 255));
+
+        jlblNumeroEdicion.setBackground(new java.awt.Color(41, 58, 38));
+        jlblNumeroEdicion.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jlblNumeroEdicion.setForeground(new java.awt.Color(41, 58, 38));
+        jlblNumeroEdicion.setText("Número de edición:");
+
+        jtxtNumeroEdicion.setBackground(new java.awt.Color(41, 58, 38));
+        jtxtNumeroEdicion.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtNumeroEdicion.setForeground(new java.awt.Color(255, 255, 255));
+
+        jtxtISBN.setBackground(new java.awt.Color(41, 58, 38));
+        jtxtISBN.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jtxtISBN.setForeground(new java.awt.Color(255, 255, 255));
+
+        jlblISBN.setBackground(new java.awt.Color(41, 58, 38));
+        jlblISBN.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jlblISBN.setForeground(new java.awt.Color(41, 58, 38));
+        jlblISBN.setText("ISBN:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jlblCódigo)
-                    .addComponent(jlblAutor)
-                    .addComponent(jlblAnio)
-                    .addComponent(jlblTitulo2)
-                    .addComponent(jlblTipo))
-                .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jtxtAutor)
-                    .addComponent(jcmbTipo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jtxtTitulo)
-                    .addComponent(jtxtCódigo)
-                    .addComponent(jtxtAnio))
-                .addGap(45, 45, 45))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jBtnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addComponent(jBtnConsultar, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jBtnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(129, 129, 129)
+                                .addComponent(jlblISBN)
+                                .addGap(32, 32, 32))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jlblNumeroEdicion)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jtxtISBN)
+                            .addComponent(jtxtNumeroEdicion)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(129, 129, 129)
+                        .addComponent(jlblTipo)
+                        .addGap(36, 36, 36)
+                        .addComponent(jcmbTipo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(104, 104, 104)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jlblCódigo)
+                            .addComponent(jlblAutor)
+                            .addComponent(jlblAnio)
+                            .addComponent(jlblTitulo2))
+                        .addGap(37, 37, 37)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jtxtAutor)
+                            .addComponent(jtxtCódigo)
+                            .addComponent(jtxtAnio)
+                            .addComponent(jtxtTitulo))))
+                .addGap(29, 29, 29)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40))
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 544, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jBtnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
-                .addComponent(jBtnConsultar, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jBtnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(85, 85, 85))
+                .addGap(34, 34, 34)
+                .addComponent(jlblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(14, 14, 14)
                 .addComponent(jlblTitulo)
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblCódigo)
-                    .addComponent(jtxtCódigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblTitulo2)
-                    .addComponent(jtxtTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblAutor)
-                    .addComponent(jtxtAutor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblAnio)
-                    .addComponent(jtxtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblTipo)
-                    .addComponent(jcmbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblCódigo)
+                            .addComponent(jtxtCódigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblTitulo2)
+                            .addComponent(jtxtTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblAutor)
+                            .addComponent(jtxtAutor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblAnio)
+                            .addComponent(jtxtAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jcmbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jlblTipo))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jlblISBN)
+                            .addComponent(jtxtISBN, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblNumeroEdicion)
+                            .addComponent(jtxtNumeroEdicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jBtnGuardar)
                     .addComponent(jBtnConsultar)
                     .addComponent(jBtnLimpiar))
-                .addGap(46, 46, 46)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(304, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jBtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnGuardarActionPerformed
+
+        String codigo = jtxtCódigo.getText().trim();
+        String titulo = jtxtTitulo.getText().trim();
+        String autor = jtxtAutor.getText().trim();
+        String tipo = jcmbTipo.getSelectedItem().toString();
+        String isbn = jtxtISBN.getText().trim();
+        String numeroTexto = jtxtNumeroEdicion.getText().trim();
+
+        if (codigo.isEmpty() || titulo.isEmpty() || autor.isEmpty()
+                || jtxtAnio.getText().trim().isEmpty()
+                || tipo.equals("Null")) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Complete todos los campos.");
+            return;
+        }
+
+        int anio;
+        try {
+            anio = Integer.parseInt(jtxtAnio.getText().trim());
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Ingrese un año válido.");
+            return;
+        }
+
+        MaterialBibliografico existente = materialDAO.buscarPorCodigo(codigo);
+
+        if (existente != null) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Ya existe un material con ese código.");
+
+            return;
+        }
+
+        MaterialBibliografico material;
+
+        if (tipo.equals("Libro")) {
+
+            if (isbn.isEmpty()) {
+
+                JOptionPane.showMessageDialog(this,
+                        "Ingrese el ISBN.");
+
+                return;
+            }
+            material = new Libro(
+                    0,
+                    codigo,
+                    titulo,
+                    autor,
+                    anio,
+                    EstadoMaterial.DISPONIBLE,
+                    isbn
+            );
+
+        } else {
+            if (numeroTexto.isEmpty()) {
+
+                JOptionPane.showMessageDialog(this,
+                        "Ingrese el número de edición.");
+
+                return;
+            }
+
+            int numeroEdicion;
+
+            try {
+                numeroEdicion = Integer.parseInt(numeroTexto);
+
+            } catch (NumberFormatException e) {
+                
+                JOptionPane.showMessageDialog(this,
+                        "Número de edición inválido.");
+
+                return;
+            }
+
+            material = new Revista(
+                    0,
+                    codigo,
+                    titulo,
+                    autor,
+                    anio,
+                    EstadoMaterial.DISPONIBLE,
+                    numeroEdicion
+            );
+        }
+
+        if (materialDAO.registrar(material)) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Material registrado correctamente.");
+
+            limpiarCampos();
+
+            cargarTabla();
+
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo registrar el material.");
+        }
+    }//GEN-LAST:event_jBtnGuardarActionPerformed
+
+    private void jBtnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnLimpiarActionPerformed
+         
+        limpiarCampos();
+         
+    }//GEN-LAST:event_jBtnLimpiarActionPerformed
+
+    private void jBtnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnConsultarActionPerformed
+        
+        String codigo = jtxtCódigo.getText().trim();
+
+        if(codigo.isEmpty()){
+
+            JOptionPane.showMessageDialog(this,
+                    "Ingrese un código.");
+            return;
+        }
+
+        MaterialBibliografico material = materialDAO.buscarPorCodigo(codigo);
+
+        if(material != null){
+            
+            jtxtTitulo.setText(material.getTitulo());
+            jtxtAutor.setText(material.getAutor());
+            jtxtAnio.setText(String.valueOf(material.getAnio()));
+
+            // Identifica de que clase es el objeto (Libro o revista)
+            if(material instanceof Libro){
+
+                jcmbTipo.setSelectedItem("Libro");
+                Libro libro = (Libro) material;
+                jtxtISBN.setText(libro.getIsbn());
+                jtxtNumeroEdicion.setText(""); // Al no ser revista queda vacío
+
+            }else{
+
+                jcmbTipo.setSelectedItem("Revista");
+
+                Revista revista = (Revista) material;
+                jtxtNumeroEdicion.setText(
+                        String.valueOf(revista.getNumeroEdicion()));
+                jtxtISBN.setText("");// Al no ser libro queda vacío
+            }
+            
+        }else{
+            JOptionPane.showMessageDialog(this,
+                    "Material no encontrado.");
+        }
+    }//GEN-LAST:event_jBtnConsultarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -212,12 +439,64 @@ public class PanelMateriales extends javax.swing.JPanel {
     private javax.swing.JLabel jlblAnio;
     private javax.swing.JLabel jlblAutor;
     private javax.swing.JLabel jlblCódigo;
+    private javax.swing.JLabel jlblISBN;
+    private javax.swing.JLabel jlblNumeroEdicion;
     private javax.swing.JLabel jlblTipo;
     private javax.swing.JLabel jlblTitulo;
     private javax.swing.JLabel jlblTitulo2;
     private javax.swing.JTextField jtxtAnio;
     private javax.swing.JTextField jtxtAutor;
     private javax.swing.JTextField jtxtCódigo;
+    private javax.swing.JTextField jtxtISBN;
+    private javax.swing.JTextField jtxtNumeroEdicion;
     private javax.swing.JTextField jtxtTitulo;
     // End of variables declaration//GEN-END:variables
+
+    //Método para limpiar campos
+    private void limpiarCampos(){
+
+        jtxtCódigo.setText("");
+        jtxtTitulo.setText("");
+        jtxtAutor.setText("");
+        jtxtAnio.setText("");
+        jtxtISBN.setText("");
+        jtxtNumeroEdicion.setText("");
+
+        jcmbTipo.setSelectedIndex(0);
+    }
+    
+    //Método para cargar la tabla
+    
+    private void cargarTabla(){
+
+       DefaultTableModel modelo =
+               (DefaultTableModel) jTableMateriales.getModel();
+
+       modelo.setRowCount(0);
+
+       List<MaterialBibliografico> lista =
+               materialDAO.listar();
+
+       for(MaterialBibliografico material : lista){
+
+           String tipo;
+           if(material instanceof Libro){
+
+               tipo = "Libro";
+
+           }else{
+               tipo = "Revista";
+           }
+
+           modelo.addRow(new Object[]{
+               material.getCodigo(),
+               material.getTitulo(),
+               material.getAutor(),
+               material.getAnio(),
+               tipo
+           });
+
+       }
+
+   }   
 }
