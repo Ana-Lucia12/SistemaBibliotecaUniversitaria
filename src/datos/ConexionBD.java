@@ -14,7 +14,7 @@ public class ConexionBD {
     
     private static final String USER = "root";
     
-    private static final String PASS = "fresitA12."; // Agregar contraseña
+    private static final String PASS = "CONTRASEÑA"; // Agregar contraseña
     
     public static Connection conectar(){
         
