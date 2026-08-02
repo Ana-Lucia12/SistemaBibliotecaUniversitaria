@@ -42,7 +42,7 @@ public class PanelPrestamos extends javax.swing.JPanel {
         jcmbUsuario.removeAllItems();
 
         for (Usuario usuario : usuarioDAO.listar()) {
-            jcmbUsuario.addItem(usuario.getNombre());
+            jcmbUsuario.addItem(usuario);
         }
     }
 
@@ -55,13 +55,19 @@ public class PanelPrestamos extends javax.swing.JPanel {
         for (MaterialBibliografico material : materialDAO.listar()) {
 
             if (material.getEstado() == EstadoMaterial.DISPONIBLE) {
-                jcmbMaterial.addItem(material.getTitulo());
+                jcmbMaterial.addItem(material);
             }
         }
     }
     
+    //Método para actualizar los comboBox
+    public void actualizarCombos() {
+        cargarUsuarios();
+        cargarMateriales();
+    }
+    
     //Método para cargar la tabla
-    private void cargarTabla() {
+    public void cargarTabla() {
 
         DefaultTableModel modelo = (DefaultTableModel) jTablePrestamos.getModel();
 
@@ -74,12 +80,14 @@ public class PanelPrestamos extends javax.swing.JPanel {
             modelo.addRow(new Object[]{
                 p.getUsuario().getNombre(),
                 p.getMaterial().getTitulo(),
-                p.getFechaPrestamo()
+                p.getFechaPrestamo(),
+                p.getFechaDevolucionPrevista(),
+                p.getFechaDevolucionReal()
             });
         }
     }
     
-    //Método para limpiar controles
+    //Método para limpiar campos
     private void limpiarCampos() {
 
         jcmbUsuario.setSelectedIndex(0);
@@ -107,38 +115,44 @@ public class PanelPrestamos extends javax.swing.JPanel {
         jBtnRegistrarPrestamo = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTablePrestamos = new javax.swing.JTable();
+        jBtnActualizarTabla = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jlblTitulo.setBackground(new java.awt.Color(41, 58, 38));
         jlblTitulo.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jlblTitulo.setForeground(new java.awt.Color(41, 58, 38));
         jlblTitulo.setText("Registro de Prestamos");
+        add(jlblTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 16, 208, -1));
 
         jlblUsuario.setBackground(new java.awt.Color(41, 58, 38));
         jlblUsuario.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
         jlblUsuario.setForeground(new java.awt.Color(41, 58, 38));
         jlblUsuario.setText("Usuario:");
+        add(jlblUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 87, -1, -1));
 
         jcmbUsuario.setBackground(new java.awt.Color(41, 58, 38));
         jcmbUsuario.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
         jcmbUsuario.setForeground(new java.awt.Color(255, 255, 255));
-        jcmbUsuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Null", "Libro ", "Revista" }));
+        add(jcmbUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 84, 553, -1));
 
         jcmbMaterial.setBackground(new java.awt.Color(41, 58, 38));
         jcmbMaterial.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
         jcmbMaterial.setForeground(new java.awt.Color(255, 255, 255));
-        jcmbMaterial.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Null", "Libro ", "Revista" }));
+        add(jcmbMaterial, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 127, 553, -1));
 
         jlblMaterial.setBackground(new java.awt.Color(41, 58, 38));
         jlblMaterial.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
         jlblMaterial.setForeground(new java.awt.Color(41, 58, 38));
         jlblMaterial.setText("Material:");
+        add(jlblMaterial, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 130, -1, -1));
 
         jlblFecha.setBackground(new java.awt.Color(41, 58, 38));
         jlblFecha.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
         jlblFecha.setForeground(new java.awt.Color(41, 58, 38));
         jlblFecha.setText("Fecha:");
+        add(jlblFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(57, 173, -1, -1));
 
         jFormattedTextFieldFecha.setBackground(new java.awt.Color(41, 58, 38));
         jFormattedTextFieldFecha.setForeground(new java.awt.Color(255, 255, 255));
@@ -146,12 +160,14 @@ public class PanelPrestamos extends javax.swing.JPanel {
         jFormattedTextFieldFecha.setCaretColor(new java.awt.Color(41, 58, 38));
         jFormattedTextFieldFecha.setDisabledTextColor(new java.awt.Color(255, 255, 255));
         jFormattedTextFieldFecha.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        add(jFormattedTextFieldFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 170, 151, -1));
 
         jBtnRegistrarPrestamo.setBackground(new java.awt.Color(41, 58, 38));
         jBtnRegistrarPrestamo.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jBtnRegistrarPrestamo.setForeground(new java.awt.Color(255, 255, 255));
         jBtnRegistrarPrestamo.setText("Registrar Préstamo");
         jBtnRegistrarPrestamo.addActionListener(this::jBtnRegistrarPrestamoActionPerformed);
+        add(jBtnRegistrarPrestamo, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 213, 186, -1));
 
         jScrollPane1.setBackground(new java.awt.Color(41, 58, 38));
 
@@ -161,17 +177,17 @@ public class PanelPrestamos extends javax.swing.JPanel {
         jTablePrestamos.setForeground(new java.awt.Color(255, 255, 255));
         jTablePrestamos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Usuario", "Material", "Fecha"
+                "Usuario", "Material", "Fecha", "Fecha devolucion prevista", "Fecha devolucion real"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -180,65 +196,14 @@ public class PanelPrestamos extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jTablePrestamos);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jlblMaterial)
-                            .addComponent(jlblUsuario)
-                            .addComponent(jlblFecha))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jFormattedTextFieldFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jcmbUsuario, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jcmbMaterial, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(69, 69, 69))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(jBtnRegistrarPrestamo, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jlblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(40, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jlblTitulo)
-                .addGap(45, 45, 45)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblUsuario)
-                    .addComponent(jcmbUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblMaterial)
-                    .addComponent(jcmbMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblFecha)
-                    .addComponent(jFormattedTextFieldFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
-                .addComponent(jBtnRegistrarPrestamo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28))
-        );
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 259, 728, 164));
+
+        jBtnActualizarTabla.setBackground(new java.awt.Color(41, 58, 38));
+        jBtnActualizarTabla.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnActualizarTabla.setForeground(new java.awt.Color(255, 255, 255));
+        jBtnActualizarTabla.setText("Refrescar");
+        jBtnActualizarTabla.addActionListener(this::jBtnActualizarTablaActionPerformed);
+        add(jBtnActualizarTabla, new org.netbeans.lib.awtextra.AbsoluteConstraints(287, 441, 186, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBtnRegistrarPrestamoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnRegistrarPrestamoActionPerformed
@@ -249,9 +214,12 @@ public class PanelPrestamos extends javax.swing.JPanel {
             MaterialDAO materialDAO = new MaterialDAO();
             PrestamoDAO prestamoDAO = new PrestamoDAO();
 
-            Usuario usuario = usuarioDAO.listar().get(jcmbUsuario.getSelectedIndex());
-            MaterialBibliografico material = materialDAO.listar().get(jcmbMaterial.getSelectedIndex());
+            Usuario usuario =
+                (Usuario) jcmbUsuario.getSelectedItem();
 
+            MaterialBibliografico material =
+                (MaterialBibliografico) jcmbMaterial.getSelectedItem();
+            
             if (prestamoDAO.contarPrestamosActivos(usuario.getId())>= usuario.obtenerLimitePrestamos()) {
 
                 JOptionPane.showMessageDialog(
@@ -309,14 +277,21 @@ public class PanelPrestamos extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jBtnRegistrarPrestamoActionPerformed
 
+    private void jBtnActualizarTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActualizarTablaActionPerformed
+        cargarTabla();
+        cargarUsuarios();
+        cargarMateriales();
+    }//GEN-LAST:event_jBtnActualizarTablaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jBtnActualizarTabla;
     private javax.swing.JButton jBtnRegistrarPrestamo;
     private javax.swing.JFormattedTextField jFormattedTextFieldFecha;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTablePrestamos;
-    private javax.swing.JComboBox<String> jcmbMaterial;
-    private javax.swing.JComboBox<String> jcmbUsuario;
+    private javax.swing.JComboBox<MaterialBibliografico> jcmbMaterial;
+    private javax.swing.JComboBox<Usuario> jcmbUsuario;
     private javax.swing.JLabel jlblFecha;
     private javax.swing.JLabel jlblMaterial;
     private javax.swing.JLabel jlblTitulo;

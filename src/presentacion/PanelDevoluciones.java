@@ -63,11 +63,14 @@ public class PanelDevoluciones extends javax.swing.JPanel {
         jTableDevoluciones = new javax.swing.JTable();
         jlblTitulo = new javax.swing.JLabel();
         jBtnRegistrarDevolución = new javax.swing.JButton();
+        jBtnActualizarTabla = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jScrollPane1.setBackground(new java.awt.Color(41, 58, 38));
 
+        jTableDevoluciones.setAutoCreateRowSorter(true);
         jTableDevoluciones.setBackground(new java.awt.Color(41, 58, 38));
         jTableDevoluciones.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jTableDevoluciones.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -93,43 +96,27 @@ public class PanelDevoluciones extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jTableDevoluciones);
 
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 104, 550, 278));
+
         jlblTitulo.setBackground(new java.awt.Color(41, 58, 38));
         jlblTitulo.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jlblTitulo.setForeground(new java.awt.Color(41, 58, 38));
         jlblTitulo.setText("Registro de devoluciones");
+        add(jlblTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 27, 237, -1));
 
         jBtnRegistrarDevolución.setBackground(new java.awt.Color(41, 58, 38));
         jBtnRegistrarDevolución.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jBtnRegistrarDevolución.setForeground(new java.awt.Color(255, 255, 255));
         jBtnRegistrarDevolución.setText("Registrar devolución");
         jBtnRegistrarDevolución.addActionListener(this::jBtnRegistrarDevoluciónActionPerformed);
+        add(jBtnRegistrarDevolución, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 400, 186, -1));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jlblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(35, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jBtnRegistrarDevolución, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(195, 195, 195))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(jlblTitulo)
-                .addGap(54, 54, 54)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jBtnRegistrarDevolución)
-                .addContainerGap(36, Short.MAX_VALUE))
-        );
+        jBtnActualizarTabla.setBackground(new java.awt.Color(41, 58, 38));
+        jBtnActualizarTabla.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jBtnActualizarTabla.setForeground(new java.awt.Color(255, 255, 255));
+        jBtnActualizarTabla.setText("Actualizar tabla");
+        jBtnActualizarTabla.addActionListener(this::jBtnActualizarTablaActionPerformed);
+        add(jBtnActualizarTabla, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 400, 186, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBtnRegistrarDevoluciónActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnRegistrarDevoluciónActionPerformed
@@ -145,14 +132,9 @@ public class PanelDevoluciones extends javax.swing.JPanel {
 
             return;
         }
-
-        int idPrestamo =
-                Integer.parseInt(
-                        jTableDevoluciones.getValueAt(fila, 0).toString()
-                );
+        int idPrestamo = Integer.parseInt(jTableDevoluciones.getValueAt(fila, 0).toString());
 
         PrestamoDAO prestamoDAO = new PrestamoDAO();
-
         Prestamo prestamo = prestamoDAO.buscarPorId(idPrestamo);
 
         if (prestamo == null) {
@@ -182,9 +164,8 @@ public class PanelDevoluciones extends javax.swing.JPanel {
                     this,
                     "Devolución registrada correctamente."
             );
-
             cargarTabla();
-
+            
         } else {
 
             JOptionPane.showMessageDialog(
@@ -194,8 +175,13 @@ public class PanelDevoluciones extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jBtnRegistrarDevoluciónActionPerformed
 
+    private void jBtnActualizarTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActualizarTablaActionPerformed
+        cargarTabla();
+    }//GEN-LAST:event_jBtnActualizarTablaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jBtnActualizarTabla;
     private javax.swing.JButton jBtnRegistrarDevolución;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableDevoluciones;
