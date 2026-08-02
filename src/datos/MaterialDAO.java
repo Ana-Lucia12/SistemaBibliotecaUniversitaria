@@ -225,4 +225,28 @@ public class MaterialDAO {
             return false;
         }
     }
+    
+    // Metodo para eliminar un material
+    public boolean eliminar(int idMaterial) {
+
+        String sql = "DELETE FROM materiales "
+                + "WHERE id_material = ?";
+
+        try (
+                Connection con = ConexionBD.conectar();
+                PreparedStatement ps = con.prepareStatement(sql)
+            ) {
+
+            ps.setInt(1, idMaterial);
+
+            int filasEliminadas = ps.executeUpdate();
+
+            return filasEliminadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("No se pudo eliminar el material");
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
