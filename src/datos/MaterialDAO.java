@@ -229,23 +229,89 @@ public class MaterialDAO {
     // Metodo para eliminar un material
     public boolean eliminar(int idMaterial) {
 
-        String sql = "DELETE FROM materiales "
-                + "WHERE id_material = ?";
+        String sqlEliminarPrestamos = 
+                "DELETE FROM prestamos WHERE id_material = ?";
+
+        String sqlEliminarMaterial = 
+                "DELETE FROM materiales WHERE id_material = ?";
 
         try (
-                Connection con = ConexionBD.conectar();
-                PreparedStatement ps = con.prepareStatement(sql)
-            ) {
+            Connection con = ConexionBD.conectar();
+        ) {
 
-            ps.setInt(1, idMaterial);
+            PreparedStatement ps1 = con.prepareStatement(sqlEliminarPrestamos);
+            ps1.setInt(1, idMaterial);
+            ps1.executeUpdate();
 
-            int filasEliminadas = ps.executeUpdate();
+
+            PreparedStatement ps2 = con.prepareStatement(sqlEliminarMaterial);
+            ps2.setInt(1, idMaterial);
+
+            int filasEliminadas = ps2.executeUpdate();
 
             return filasEliminadas > 0;
 
+
         } catch (SQLException e) {
+
             System.out.println("No se pudo eliminar el material");
             e.printStackTrace();
+
+            return false;
+        }
+    }
+    
+    public boolean actualizar(MaterialBibliografico material) {
+
+        String sql = "UPDATE materiales SET "
+                + "codigo = ?, "
+                + "titulo = ?, "
+                + "autor = ?, "
+                + "anio_publicacion = ?, "
+                + "tipo_material = ?, "
+                + "estado = ?, "
+                + "isbn = ?, "
+                + "numero_edicion = ? "
+                + "WHERE id_material = ?";
+
+        try (
+            Connection con = ConexionBD.conectar();
+            PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+
+            ps.setString(1, material.getCodigo());
+            ps.setString(2, material.getTitulo());
+            ps.setString(3, material.getAutor());
+            ps.setInt(4, material.getAnio());
+            ps.setString(5, material.getTipoMaterial().name());
+            ps.setString(6, material.getEstado().name());
+
+            if (material instanceof Libro) {
+
+                Libro libro = (Libro) material;
+
+                ps.setString(7, libro.getIsbn());
+                ps.setNull(8, Types.INTEGER);
+
+            } else {
+
+                Revista revista = (Revista) material;
+
+                ps.setNull(7, Types.VARCHAR);
+                ps.setInt(8, revista.getNumeroEdicion());
+            }
+
+            ps.setInt(9, material.getId());
+
+            int filasActualizadas = ps.executeUpdate();
+
+            return filasActualizadas > 0;
+
+        } catch (SQLException e) {
+
+            System.out.println("Error al actualizar el material");
+            e.printStackTrace();
+
             return false;
         }
     }

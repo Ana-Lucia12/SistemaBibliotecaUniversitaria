@@ -66,4 +66,9 @@ public abstract class Usuario {
 
     //Método para obtener limite de préstamos de materiales bibliográficos
     public abstract int obtenerLimitePrestamos();
+    
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }
